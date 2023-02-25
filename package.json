@@ -1,0 +1,29 @@
+{
+  "name": "store-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danistiven19/store-node.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danistiven19/store-node/issues"
+  },
+  "homepage": "https://github.com/danistiven19/store-node#readme",
+  "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "faker": "^5.5.3",
+    "joi": "^17.8.3",
+    "nodemon": "^2.0.20"
+  }
+}
