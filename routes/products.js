@@ -1,6 +1,7 @@
 const express = require("express");
 const ProductsService = require('./../services/product.service');
 const validatorHandler = require('./../middleware/validator.handler');
+const { loadProducts } = require('./../controllers/products.controllers');
 const { createProductSchema, updateProductSchema, getProductSchema } = require('./../schemas/product.schema');
 const router = express.Router();
 const productService = new ProductsService();
@@ -9,7 +10,7 @@ router.get('/', async (req, res) => {
     const products = await productService.find();
         res.json(products);
     });
-    
+
     router.get('/filter', (req, res) => {
         res.send('Soy un filter');
     });
@@ -58,6 +59,8 @@ router.get('/', async (req, res) => {
             next(error);
         }
     });
+
+    router.post('/load', loadProducts);
 
     module.exports = router;
     
