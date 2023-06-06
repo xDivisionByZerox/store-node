@@ -3,11 +3,13 @@ const faker = require('faker');
 const routerApi = require('./routes');
 const cors = require('cors');
 const { errorHandler, logErrors, boomError } = require('./middleware/error.handler');
+const connectDB = require("./db/db");
 
 const app = express()
 const port = 3000;
 
 app.use(express.json());
+connectDB();
 const whitelist = ['http://localhost:3000'];
 const options = {
     origin: (origin, callback) => {
@@ -27,7 +29,6 @@ app.get('/', (req, res) => {
 app.get('/nueva-ruta', (req, res) => {
     res.send('Hola, soy una nueva ruta')
 });
-
 
 routerApi(app);
 app.use(logErrors);

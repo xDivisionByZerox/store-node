@@ -12,7 +12,7 @@ const loadProducts = async(req, res, next) => {
         let elements = [];
         readFile
             .on('error', (err) => {
-                next(boom.notFound(err));
+                throw next(boom.notFound(err));
             })
             .pipe(parse({ delimiter: ','}))
             .on('data', (data) => {
