@@ -4,8 +4,10 @@ const routerApi = require('./routes');
 const cors = require('cors');
 const { errorHandler, logErrors, boomError } = require('./middleware/error.handler');
 const connectDB = require("./db/db");
+const cookieParser = require("cookie-parser");
 
-const app = express()
+const app = express();
+app.use(cookieParser());
 const port = 3000;
 
 app.use(express.json());
