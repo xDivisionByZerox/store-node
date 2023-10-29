@@ -12,8 +12,9 @@ const port = 3000;
 
 app.use(express.json());
 connectDB();
-const whitelist = ['http://localhost:3000'];
+const whitelist = ['http://localhost:3000', 'http://localhost:4200'];
 const options = {
+    allowedHeaders: ['Content-Type', 'Authorization'],
     origin: (origin, callback) => {
         if(whitelist.includes(origin) || !origin) {
             callback(null, true);

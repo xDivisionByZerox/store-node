@@ -2,14 +2,11 @@ const express = require("express");
 const ProductsService = require('./../services/product.service');
 const validatorHandler = require('./../middleware/validator.handler');
 const { loadProducts } = require('./../controllers/products.controllers');
-const { createProductSchema, updateProductSchema, getProductSchema, getProductNameSchema } = require('./../schemas/product.schema');
+const { createProductSchema, updateProductSchema, getProductSchema, getProductNameSchema } = require('../db/schema/product.schema');
 const router = express.Router();
 const productService = new ProductsService();
 
-router.get('/', async (req, res) => {
-    const products = await productService.find();
-        res.json(products);
-    });
+router.get('/', productService.find);
 
     router.get('/filter', (req, res) => {
         res.send('Soy un filter');
@@ -17,35 +14,29 @@ router.get('/', async (req, res) => {
     
     router.get('/:id', 
     validatorHandler(getProductSchema, 'params'),
-    async (req, res, next) => {
-        try {
-            const id = req.params.id;
-            const product = await productService.findOne('id', id);
-        
-            res.json(product);
-        } catch (error) {
-            next(error);
-        }
+    (req, res, next) => {
+        const id = req.params.id;
+        productService.findOne(req, res, next, {id});
     });
 
     router.get('/name/:productName',
     validatorHandler(getProductNameSchema, 'params'),
     async (req, res, next) => {
-        try {
-            const productName = req.params.productName;
-            const product = await productService.findOne('name',productName);
-            res.json(product);
-        } catch(err) {
-            next(err)
-        }
+        const productName = req.params.productName;
+        productService.findOne(req, res, next, { name: productName})
     });
 
     router.post('/',
     validatorHandler(createProductSchema, 'body'),
-    async (req, res) => {
+    async (req, res, next) => {
         const body = req.body;
-        const newProduct = await productService.create(body);
-        res.status(201).json(newProduct);
+        let result = {};
+        if (body.autogenerate) {
+            productService.generate(req, res, next);
+        } else {
+            result = await productService.create(body);
+            res.status(201).json(result);
+        }
     });
 
     router.patch('/:id',
@@ -61,6 +52,8 @@ router.get('/', async (req, res) => {
             next(error);
         }
     });
+
+    router.delete('/', productService.deleteAll);
 
     router.delete('/:id', async (req, res) => {
         try {

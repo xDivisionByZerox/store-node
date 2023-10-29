@@ -1,29 +1,40 @@
 const faker = require('faker');
 const boom = require('@hapi/boom');
 const PRODUCT_NOT_FOUND = 'Product Not Found';
+const {ProductDB, createProductSchema} = require("./../db/schema/product.schema");
 
 class ProductsService {
 
     constructor() {
         this.products = [];
-        this.generate();
+        //this.generate();
     }
 
-    generate() {
+    async generate(req, res, next) {
         const limit = 100;
-    
-    for (let index = 0; index < limit; index++) {
-        const product = {
-            id: faker.datatype.uuid(),
-            name: faker.commerce.productName(),
-            price: parseInt(faker.commerce.price(), 10),
-            image: faker.image.imageUrl(),
-            isBlocked: faker.datatype.boolean()
-        };
-        this.products.push(product);
+    const prods = [];
+    try {
+        for (let index = 0; index < limit; index++) {
+            const product = {
+                id: faker.datatype.uuid(),
+                name: faker.commerce.productName(),
+                price: parseInt(faker.commerce.price(), 10),
+                image: 'https://picsum.photos/200/300',
+                isBlocked: faker.datatype.boolean()
+            };
+            prods.push(product);
+        }
+        const createProds = await ProductDB.insertMany(prods);
+        this.products = createProds;
+
+        res.status(200).json({
+            message: 'products generated',
+            products: createProds
+        });
+    } catch (err) {
+        next(err);
     }
-    
-    }
+    };
 
     async create(data) {
         const newProduct = {
@@ -35,26 +46,32 @@ class ProductsService {
     }
 
 
-    async find() {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(this.products);
-            }, 3000);
-        });
+    async find(req, res, next) {
+        try {
+            const products = await ProductDB.find({});
+            res.status(200).json(products);
+        } catch(err) {
+            next(err);
+        }
     }
 
 
-    async findOne(param, value) {
-        const product = this.products.find(item => item[param] == value);
-        if (!product) {
-            throw boom.notFound(PRODUCT_NOT_FOUND);
-        }
+    findOne = async(req, res, next, query) => {
+        try {
+            const product = await ProductDB.findOne(query);
 
-        if (product.isBlocked) {
-            throw boom.conflict('Product is Blocked');
+            if (!product) {
+                throw boom.notFound(PRODUCT_NOT_FOUND);
+            }
+    
+            if (product.isBlocked) {
+                throw boom.conflict('Product is Blocked');
+            }
+            
+            res.status(200).json(product);
+        } catch(err) {
+            next(err);
         }
-        
-        return product; 
     }
 
     async update(id, newProductData) {
@@ -81,6 +98,15 @@ class ProductsService {
 
         this.products.splice(index, 1);
         return id;
+    }
+
+    deleteAll = async(req, res, next) => {
+        try {
+            const deletedIds = await ProductDB.deleteMany({});
+            res.status(201).json(deletedIds);
+        } catch(err) {
+            next(err);
+        }
     }
 
 }
