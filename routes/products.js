@@ -6,7 +6,7 @@ const { createProductSchema, updateProductSchema, getProductSchema, getProductNa
 const router = express.Router();
 const productService = new ProductsService();
 
-router.get('/', productService.find);
+router.post('/', productService.find);
 
     router.get('/filter', (req, res) => {
         res.send('Soy un filter');
@@ -26,7 +26,7 @@ router.get('/', productService.find);
         productService.findOne(req, res, next, { name: productName})
     });
 
-    router.post('/',
+    router.post('/generate',
     validatorHandler(createProductSchema, 'body'),
     async (req, res, next) => {
         const body = req.body;
