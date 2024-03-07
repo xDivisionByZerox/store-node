@@ -48,7 +48,9 @@ class ProductsService {
 
     async find(req, res, next) {
         try {
-            const products = await ProductDB.find({});
+            const {name} = req.body;
+            console.log(name)
+            const products = await ProductDB.find({"name": { "$regex": name, "$options": "i" }});
             res.status(200).json(products);
         } catch(err) {
             next(err);
