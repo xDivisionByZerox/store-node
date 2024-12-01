@@ -1,4 +1,4 @@
-const faker = require('faker');
+const {faker} = require('@faker-js/faker');
 const boom = require('@hapi/boom');
 const PRODUCT_NOT_FOUND = 'Product Not Found';
 const {ProductDB, createProductSchema} = require("./../db/schema/product.schema");
@@ -16,7 +16,7 @@ class ProductsService {
     try {
         for (let index = 0; index < limit; index++) {
             const product = {
-                id: faker.datatype.uuid(),
+                id: faker.string.uuid(),
                 name: faker.commerce.productName(),
                 price: parseInt(faker.commerce.price(), 10),
                 image: 'https://picsum.photos/200/300',
@@ -38,7 +38,7 @@ class ProductsService {
 
     async create(data) {
         const newProduct = {
-            id: faker.datatype.uuid(),
+            id: faker.string.uuid(),
             ...data
         };
         this.products.push(newProduct);
